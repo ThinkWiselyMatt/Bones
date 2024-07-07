@@ -8,11 +8,11 @@ import Network.HTTP.Client
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import qualified Data.ByteString.Lazy.Char8 as L8
 import Control.Concurrent (threadDelay, forkIO, killThread, ThreadId)
-import System.IO (hGetContents, hPutStr, hPutStrLn, stderr, openFile, IOMode(WriteMode), IOMode(AppendMode), hFlush, Handle, hClose)
+import System.IO (hGetContents, hPutStr, hPutStrLn, stderr, openFile, IOMode(AppendMode), hFlush, Handle, hClose)
 import System.Process (createProcess, proc, terminateProcess, waitForProcess, ProcessHandle, StdStream(CreatePipe), std_out, std_err)
 import Data.Text (isInfixOf)
 import Data.Text.Encoding (decodeUtf8)
-import Control.Monad (when, void)
+import Control.Monad (when, void, forM_)
 
 spec :: Spec
 spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $ do
@@ -36,6 +36,9 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
       response <- httpLbs request manager
       L8.unpack (responseBody response) `shouldBe` "Hello from Servant!"
 
+    it "hit enter to continue" $ \_ -> do
+      (1 + 1) `shouldBe` 2
+
 logOutput :: Bool
 logOutput = False -- Set this to True if you want to see logs
 
@@ -44,21 +47,27 @@ startServices logOutput = do
   logFile <- openFile "test_output.log" AppendMode -- This will append to the file (doesnt work still empty log file TODO)
   (_, Just hout, Just herr, ph) <- createProcess (proc "stack" ["exec", "bones-exe"])
     { std_out = CreatePipe, std_err = CreatePipe }
+  
   let handleOutput handle = forkIO $ do
         contents <- hGetContents handle
         putStrLn "Reading output from handle..." -- Debug statement
         if logOutput
           then mapM_ (hPutStrLn stderr) (lines contents)
-          else hPutStr logFile contents >> hFlush logFile
+          else do
+            hPutStr logFile contents
+            hFlush logFile
+            hClose logFile
+  
   outThread <- handleOutput hout
   errThread <- handleOutput herr
+
   -- Give the services some time to start
   threadDelay 5000000  -- 5 seconds
   return (ph, [outThread, errThread], logFile)
 
 stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> IO ()
 stopServices logOutput (ph, threads, logFile) = do
-  mapM_ killThread threads
+  forM_ threads killThread
   terminateProcess ph
   _ <- waitForProcess ph
   hFlush logFile
