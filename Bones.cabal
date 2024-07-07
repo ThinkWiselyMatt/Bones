@@ -1,0 +1,93 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           Bones
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/ThinkWiselyMatt/Bones#readme>
+homepage:       https://github.com/ThinkWiselyMatt/Bones#readme
+bug-reports:    https://github.com/ThinkWiselyMatt/Bones/issues
+author:         Zack
+maintainer:     thinkwiselymatt@gmail.com
+copyright:      2024
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/ThinkWiselyMatt/Bones
+
+library
+  exposed-modules:
+      Lib
+      ScottyApp
+      YesodApp
+      ServantApp
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , http-client
+    , http-client-tls
+    , scotty
+    , servant
+    , servant-server
+    , text
+    , warp
+    , yesod
+    , yesod-core
+  default-language: Haskell2010
+
+executable Bones-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_Bones
+  autogen-modules:
+      Paths_Bones
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Bones
+    , base >=4.7 && <5
+    , http-client
+    , http-client-tls
+    , scotty
+    , servant
+    , servant-server
+    , text
+    , warp
+    , yesod
+    , yesod-core
+  default-language: Haskell2010
+
+test-suite Bones-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_Bones
+  autogen-modules:
+      Paths_Bones
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Bones
+    , base >=4.7 && <5
+    , http-client
+    , http-client-tls
+    , scotty
+    , servant
+    , servant-server
+    , text
+    , warp
+    , yesod
+    , yesod-core
+  default-language: Haskell2010

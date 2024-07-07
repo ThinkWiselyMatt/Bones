@@ -1,0 +1,83 @@
+name:                Bones
+version:             0.1.0.0
+github:              "ThinkWiselyMatt/Bones"
+license:             BSD-3-Clause
+author:              "Zack"
+maintainer:          "thinkwiselymatt@gmail.com"
+copyright:           "2024"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            e
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/ThinkWiselyMatt/Bones#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- text
+- scotty
+- yesod
+- yesod-core
+- servant
+- servant-server
+- warp
+- http-client
+- http-client-tls
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Lib
+    - ScottyApp
+    - YesodApp
+    - ServantApp
+  other-modules: []
+  dependencies:
+  - base >= 4.7 && < 5
+  - text
+  - scotty
+  - yesod
+  - yesod-core
+  - servant
+  - servant-server
+  - warp
+
+executables:
+  Bones-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Bones
+
+tests:
+  Bones-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Bones
