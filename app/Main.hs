@@ -1,5 +1,5 @@
 
-module Main where
+module Main (main) where
 
 import Control.Concurrent (forkIO)
 import qualified ScottyApp

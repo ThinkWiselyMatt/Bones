@@ -59,6 +59,9 @@ library:
   - servant
   - servant-server
   - warp
+  - hspec
+  - http-client
+  - http-client-tls
 
 executables:
   Bones-exe:
@@ -81,3 +84,8 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - Bones
+    - hspec
+    - http-client
+    - http-client-tls
+    - bytestring
+    - process

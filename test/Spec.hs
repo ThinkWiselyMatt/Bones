@@ -1,2 +1,7 @@
+
+
+import Test.Hspec
+import qualified WebServiceSpecs (spec)
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = hspec WebServiceSpecs.spec
