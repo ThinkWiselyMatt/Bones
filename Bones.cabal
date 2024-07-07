@@ -37,6 +37,7 @@ library
     , hspec
     , http-client
     , http-client-tls
+    , process
     , scotty
     , servant
     , servant-server

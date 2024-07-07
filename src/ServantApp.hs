@@ -6,15 +6,37 @@ module ServantApp (servantApp) where
 
 import Servant
 import Network.Wai.Handler.Warp (run)
-import Data.Text (Text)
+import System.Process (readProcess)
+import Data.Text.Lazy (Text, fromStrict)
+import Data.Text (pack)
+import Control.Monad.IO.Class (liftIO)
+import Control.Exception (catch, SomeException)
 
 type API = "servant" :> Get '[PlainText] Text
+      :<|> "servant" :> "csharp" :> Get '[PlainText] Text
 
 server :: Server API
-server = return "Hello from Servant!"
+server = servantHandler :<|> servantCSharpHandler
 
+servantHandler :: Handler Text
+servantHandler = return "Hello from Servant!"
+
+servantCSharpHandler :: Handler Text
+servantCSharpHandler = do
+  let exePath = "C:\\Users\\Owner\\Desktop\\Development\\Bones\\Server Dependancies\\CSharpHelloWorld\\HelloWorldLibrary.exe"
+  result <- liftIO $ tryReadProcess exePath [] ""
+  case result of
+    Left err -> return (fromStrict $ pack $ "Servant: " ++ err)
+    Right output -> return (fromStrict $ pack $ "Servant: " ++ output)
+    
 api :: Proxy API
 api = Proxy
 
+app :: Application
+app = serve api server
+
 servantApp :: IO ()
-servantApp = run 3003 (serve api server)
+servantApp = run 3003 app
+
+tryReadProcess :: FilePath -> [String] -> String -> IO (Either String String)
+tryReadProcess cmd args input = catch (Right <$> readProcess cmd args input) (return . Left . show :: SomeException -> IO (Either String String))
