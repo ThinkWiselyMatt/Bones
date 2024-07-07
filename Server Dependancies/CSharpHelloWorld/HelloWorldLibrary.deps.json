@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "HelloWorldLibrary/1.0.0": {
+        "dependencies": {
+          "CSharpAPI": "1.0.0"
+        },
+        "runtime": {
+          "HelloWorldLibrary.dll": {}
+        }
+      },
+      "CSharpAPI/1.0.0": {
+        "runtime": {
+          "CSharpAPI.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "HelloWorldLibrary/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CSharpAPI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
