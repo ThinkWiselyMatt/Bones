@@ -30,6 +30,7 @@ dependencies:
 - warp
 - http-client
 - http-client-tls
+- QuickCheck
 
 ghc-options:
 - -Wall
@@ -63,6 +64,7 @@ library:
   - hspec
   - http-client
   - http-client-tls
+  
 
 executables:
   Bones-exe:

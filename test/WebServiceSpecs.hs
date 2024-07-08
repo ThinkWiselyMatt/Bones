@@ -12,7 +12,7 @@ import System.IO (hGetContents, hPutStr, hPutStrLn, stderr, openFile, IOMode(App
 import System.Process (createProcess, proc, terminateProcess, waitForProcess, ProcessHandle, StdStream(CreatePipe), std_out, std_err)
 import Data.Text (isInfixOf)
 import Data.Text.Encoding (decodeUtf8)
-import Control.Monad (when, void, forM_)
+import Control.Monad (forM_)
 
 spec :: Spec
 spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $ do
@@ -23,6 +23,14 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
       response <- httpLbs request manager
       L8.unpack (responseBody response) `shouldBe` "Hello from Scotty!"
 
+    it "responds from Scotty app CSharp" $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3001/scotty/csharp"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Scotty:"
+      body `shouldContain` "Hello from C#"
+
     it "responds from Yesod app" $ \_ -> do
       manager <- newManager tlsManagerSettings
       request <- parseRequest "http://localhost:3002/yesod"
@@ -30,11 +38,27 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
       let body = decodeUtf8 (L8.toStrict $ responseBody response)
       body `shouldSatisfy` ("Hello from Yesod!" `isInfixOf`)
 
+    it "responds from Yesod app CSharp" $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3002/yesod/csharp"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Yesod:"
+      body `shouldContain` "Hello from C#"
+
     it "responds from Servant app" $ \_ -> do
       manager <- newManager tlsManagerSettings
       request <- parseRequest "http://localhost:3003/servant"
       response <- httpLbs request manager
       L8.unpack (responseBody response) `shouldBe` "Hello from Servant!"
+
+    it "responds from Servant app CSharp" $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3003/servant/csharp"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Servant:"
+      body `shouldContain` "Hello from C#"
 
     it "hit enter to continue" $ \_ -> do
       (1 + 1) `shouldBe` 2
@@ -44,7 +68,7 @@ logOutput = False -- Set this to True if you want to see logs
 
 startServices :: Bool -> IO (ProcessHandle, [ThreadId], Handle)
 startServices logOutput = do
-  logFile <- openFile "test_output.log" AppendMode -- This will append to the file (doesnt work still empty log file TODO)
+  logFile <- openFile "test_output.log" AppendMode -- This will append to the file (doesn't work still empty log file TODO)
   (_, Just hout, Just herr, ph) <- createProcess (proc "stack" ["exec", "bones-exe"])
     { std_out = CreatePipe, std_err = CreatePipe }
   
@@ -66,7 +90,7 @@ startServices logOutput = do
   return (ph, [outThread, errThread], logFile)
 
 stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> IO ()
-stopServices logOutput (ph, threads, logFile) = do
+stopServices _ (ph, threads, logFile) = do
   forM_ threads killThread
   terminateProcess ph
   _ <- waitForProcess ph
