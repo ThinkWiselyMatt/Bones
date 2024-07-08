@@ -14,7 +14,7 @@ runScottyApp = scotty 3001 $ do
         text "Hello from Scotty!"
 
     get "/scotty/csharp" $ do
-        let exePath = "C:\\Users\\Owner\\Desktop\\Development\\Bones\\Server Dependancies\\CSharpHelloWorld\\HelloWorldLibrary.exe"
+        let exePath = "Server Dependancies\\CSharpHelloWorld\\HelloWorldLibrary.exe"
         result <- liftIO $ tryReadProcess exePath [] ""
         case result of
             Left err -> text (pack $ "Scotty: " ++ err)

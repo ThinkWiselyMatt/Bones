@@ -23,7 +23,7 @@ servantHandler = return "Hello from Servant!"
 
 servantCSharpHandler :: Handler Text
 servantCSharpHandler = do
-  let exePath = "C:\\Users\\Owner\\Desktop\\Development\\Bones\\Server Dependancies\\CSharpHelloWorld\\HelloWorldLibrary.exe"
+  let exePath = "Server Dependancies\\CSharpHelloWorld\\HelloWorldLibrary.exe"
   result <- liftIO $ tryReadProcess exePath [] ""
   case result of
     Left err -> return (fromStrict $ pack $ "Servant: " ++ err)
