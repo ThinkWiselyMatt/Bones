@@ -5,10 +5,9 @@ module ScottyApp (runScottyApp) where -- scottyApp namespace collision so added 
 import Web.Scotty
 import CppFFI
 import Foreign.C.String (peekCString)
-import System.Process (readProcess)
 import Data.Text.Lazy (pack)
 import Control.Monad.IO.Class (liftIO)
-import Control.Exception (catch, SomeException)
+import Lib (tryReadProcess)
 
 runScottyApp :: IO ()
 runScottyApp = scotty 3001 $ do
@@ -27,11 +26,7 @@ runScottyApp = scotty 3001 $ do
       text $ pack $ "Scotty: " ++ msg
       
     get "/scotty/cpp/add/:x/:y" $ do
-      x <- param "x"
-      y <- param "y"
-      sum <- liftIO $ add (read x) (read y)
-      text $ pack $ "Scotty: Sum = " ++ show sum
-
-
-tryReadProcess :: FilePath -> [String] -> String -> IO (Either String String)
-tryReadProcess cmd args input = catch (Right <$> readProcess cmd args input) (return . Left . show :: SomeException -> IO (Either String String))
+      x <- captureParam "x"
+      y <- captureParam "y"
+      sumResult <- liftIO $ add (read x) (read y)
+      text $ "Scotty: Sum = " <> (pack . show $ sumResult)
