@@ -30,6 +30,22 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
       let body = L8.unpack (responseBody response)
       body `shouldContain` "Scotty:"
       body `shouldContain` "Hello from C#"
+    
+    it "responds from Scotty C++"  $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3001/scotty/cpp"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Scotty:"
+      body `shouldContain` "Hello from C++!"
+
+    it "responds from Scotty C++ add"  $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3001/scotty/cpp/add/7/51"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Scotty:"
+      body `shouldContain` "Sum = 58"
 
     it "responds from Yesod app" $ \_ -> do
       manager <- newManager tlsManagerSettings
@@ -46,6 +62,22 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
       body `shouldContain` "Yesod:"
       body `shouldContain` "Hello from C#"
 
+    it "responds from Yesod C++"  $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3002/yesod/cpp"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Yesod:"
+      body `shouldContain` "Hello from C++!"
+
+    it "responds from Yesod C++ add"  $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3002/yesod/cpp/add/1/51"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Yesod:"
+      body `shouldContain` "Sum = 52"
+
     it "responds from Servant app" $ \_ -> do
       manager <- newManager tlsManagerSettings
       request <- parseRequest "http://localhost:3003/servant"
@@ -59,8 +91,24 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
       let body = L8.unpack (responseBody response)
       body `shouldContain` "Servant:"
       body `shouldContain` "Hello from C#"
+    
+    it "responds from Servant app C++" $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3003/servant/cpp"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Servant:"
+      body `shouldContain` "Hello from C++!"
+    
+    it "responds from Servant app C++ add" $ \_ -> do
+      manager <- newManager defaultManagerSettings
+      request <- parseRequest "http://localhost:3003/servant/cpp/add/40/2"
+      response <- httpLbs request manager
+      let body = L8.unpack (responseBody response)
+      body `shouldContain` "Servant:"
+      body `shouldContain` "Sum = 42"
 
-    it "hit enter to continue" $ \_ -> do
+    it "Service still running if you want to test anything in browser -- hit enter to continue" $ \_ -> do
       (1 + 1) `shouldBe` 2
 
 logOutput :: Bool

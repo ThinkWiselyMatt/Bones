@@ -16,8 +16,8 @@ import Lib (tryReadProcess)
 
 type API = "servant" :> Get '[PlainText] Text
       :<|> "servant" :> "csharp" :> Get '[PlainText] Text
-      :<|> "servant" :> "cppgetmessagee" :> Get '[PlainText] Text
-      :<|> "servant" :> "add" :> Capture "x" Int :> Capture "y" Int :> Get '[PlainText] Text
+      :<|> "servant" :> "cpp" :> Get '[PlainText] Text
+      :<|> "servant" :> "cpp" :> "add" :> Capture "x" Int :> Capture "y" Int :> Get '[PlainText] Text
 
 server :: Server API
 server = servantHandler :<|> servantCSharpHandler :<|> servantCppGetMessageHandler :<|> servantCppAddHandler

@@ -22,7 +22,7 @@ data App = App
 mkYesod "App" [parseRoutes|
 /yesod YesodR GET
 /yesod/csharp YesodCSharpR GET
-/yesod/cppgetmessagee YesodCppGetMessageR GET
+/yesod/cpp YesodCppGetMessageR GET
 /yesod/cpp/add/#Int/#Int YesodCppAddR GET
 |]
 
