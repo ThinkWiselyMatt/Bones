@@ -29,9 +29,14 @@ library
       ScottyApp
       YesodApp
       ServantApp
+      CppFFI
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  extra-lib-dirs:
+      C:/Users/Owner/Desktop/Development/Bones/ServerDependancies/C++NativeExports
+  extra-libraries:
+      NativeExports
   build-depends:
       QuickCheck
     , base >=4.7 && <5

@@ -50,6 +50,11 @@ library:
     - ScottyApp
     - YesodApp
     - ServantApp
+    - CppFFI
+  extra-lib-dirs:
+      "C:/Users/Owner/Desktop/Development/Bones/ServerDependancies/C++NativeExports"
+  extra-libraries:
+    - NativeExports
   other-modules: []
   dependencies:
   - base >= 4.7 && < 5
