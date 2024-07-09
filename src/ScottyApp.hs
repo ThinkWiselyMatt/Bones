@@ -4,6 +4,7 @@ module ScottyApp (runScottyApp) where -- scottyApp namespace collision so added 
 
 import Web.Scotty
 import CppFFI
+import Pyfi (python, py)
 import Foreign.C.String (peekCString)
 import System.Process (readProcess)
 import Data.Text.Lazy (pack)
@@ -31,6 +32,17 @@ runScottyApp = scotty 3001 $ do
       y <- param "y"
       sum <- liftIO $ add (read x) (read y)
       text $ pack $ "Scotty: Sum = " ++ show sum
+    
+    get "/scotty/python/add/:x/:y" $ do
+        x <- param "x"
+        y <- param "y"
+        result <- liftIO $ python "python" $ py "addTwoNumbers" x y
+        text $ "Scotty: Sum from Python = " <> (pack . show $ (result :: Int))
+
+    get "/scotty/python/print/:message" $ do
+        message <- param "message"
+        liftIO $ python "python" $ py "printMessage" message
+        text $ "Scotty: Message printed by Python : "
 
 
 tryReadProcess :: FilePath -> [String] -> String -> IO (Either String String)

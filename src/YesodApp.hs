@@ -11,6 +11,7 @@ module YesodApp (yesodApp) where
 
 import Yesod
 import CppFFI
+import Pyfi (python, py)
 import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
 import System.Process (readProcess)
@@ -24,6 +25,8 @@ mkYesod "App" [parseRoutes|
 /yesod/csharp YesodCSharpR GET
 /yesod/cppgetmessagee YesodCppGetMessageR GET
 /yesod/add/#Int/#Int YesodAddR GET
+/yesod/python/add/#Int/#Int PythonAddR GET
+/yesod/python/print/#Text PythonPrintR GET
 |]
 
 instance Yesod App
@@ -47,6 +50,16 @@ getYesodAddR :: Int -> Int -> HandlerFor App Text
 getYesodAddR x y = do
   sum <- liftIO $ add (fromIntegral x) (fromIntegral y)
   return $ pack $ "Yesod: Sum = " ++ show sum
+
+getYesodPythonAddR :: Int -> Int -> HandlerFor App Text
+getYesodPythonAddR x y = do
+  result <- liftIO $ python "python" $ py "addTwoNumbers" x y
+  return $ "Yesod: Sum from Python = " <> pack (show (result :: Int))
+
+getYesodPythonPrintR :: Text -> HandlerFor App Text
+getYesodPythonPrintR message = do
+  liftIO $ python "python" $ py "printMessage" message
+  return $ "Yesod: Message printed by Python"
     
 yesodApp :: IO ()
 yesodApp = do

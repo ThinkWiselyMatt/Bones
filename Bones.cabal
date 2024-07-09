@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           Bones
-version:        0.1.0.0
+version:        1.0.0.3
 description:    Please see the README on GitHub at <https://github.com/ThinkWiselyMatt/Bones#readme>
 homepage:       https://github.com/ThinkWiselyMatt/Bones#readme
 bug-reports:    https://github.com/ThinkWiselyMatt/Bones/issues
@@ -44,6 +44,7 @@ library
     , http-client
     , http-client-tls
     , process
+    , pyfi
     , scotty
     , servant
     , servant-server
@@ -68,6 +69,7 @@ executable Bones-exe
     , base >=4.7 && <5
     , http-client
     , http-client-tls
+    , pyfi
     , scotty
     , servant
     , servant-server
@@ -98,6 +100,7 @@ test-suite Bones-test
     , http-client
     , http-client-tls
     , process
+    , pyfi
     , scotty
     , servant
     , servant-server

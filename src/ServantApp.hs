@@ -14,14 +14,17 @@ import Control.Exception (catch, SomeException)
 import CppFFI
 import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
+import Pyfi (python, py)
 
 type API = "servant" :> Get '[PlainText] Text
       :<|> "servant" :> "csharp" :> Get '[PlainText] Text
       :<|> "servant" :> "cppgetmessagee" :> Get '[PlainText] Text
       :<|> "servant" :> "add" :> Capture "x" Int :> Capture "y" Int :> Get '[PlainText] Text
+      :<|> "servant" :> "python" :> "add" :> Capture "x" Int :> Capture "y" Int :> Get '[PlainText] String
+      :<|> "servant" :> "python" :> "print" :> Capture "message" String :> Get '[PlainText] String
 
 server :: Server API
-server = servantHandler :<|> servantCSharpHandler :<|> servantCppGetMessageHandler :<|> servantAddHandler
+server = servantHandler :<|> servantCSharpHandler :<|> servantCppGetMessageHandler :<|> servantAddHandler :<|> pythonAddHandler :<|> pythonPrintHandler
 
 servantHandler :: Handler Text
 servantHandler = return "Hello from Servant!"
@@ -43,6 +46,16 @@ servantAddHandler :: Int -> Int -> Handler Text
 servantAddHandler x y = do
   sum <- liftIO $ add (fromIntegral x) (fromIntegral y)
   return $ fromStrict $ pack $ "Servant: Sum = " ++ show sum
+
+servantPythonAddHandler :: Int -> Int -> Handler String
+servantPythonAddHandler x y = do
+  result <- liftIO $ python "python" $ py "addTwoNumbers" x y
+  return $ "Servant: Sum from Python = " ++ show (result :: Int)
+
+servantPythonPrintHandler :: String -> Handler Text
+servantPythonPrintHandler message = do
+  liftIO $ python "python" $ py "printMessage" message
+  return $ "Servant: Message printed by Python"
 
 api :: Proxy API
 api = Proxy

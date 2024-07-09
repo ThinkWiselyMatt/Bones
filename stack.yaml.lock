@@ -3,7 +3,14 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: pyfi-0.4.0.4@sha256:c2ce69c477a1d5be479ad9f1e361a17fe12e862637c18c855a5f57f4e77edfeb,1080
+    pantry-tree:
+      sha256: 72940c7dfe8262b39d258d2ab6db06f2f5559d74b7e544441d3c97d798f037b7
+      size: 290
+  original:
+    hackage: pyfi-0.4.0.4
 snapshots:
 - completed:
     sha256: 87da71cb0ae9ee1ea1bf51a8eb9812f39f779be76abc0a3c926defd8afda05d1
