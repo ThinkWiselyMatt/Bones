@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-unused-top-binds #-} --unused libs pulled in by Yesod, no need to warn each build 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -14,17 +15,16 @@ import CppFFI
 import Pyfi (python, py)
 import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
-import System.Process (readProcess)
 import Data.Text (Text, pack)
-import Control.Exception (catch, SomeException)
+import Lib (tryReadProcess)
 
 data App = App
 
 mkYesod "App" [parseRoutes|
 /yesod YesodR GET
 /yesod/csharp YesodCSharpR GET
-/yesod/cppgetmessagee YesodCppGetMessageR GET
-/yesod/add/#Int/#Int YesodAddR GET
+/yesod/cpp YesodCppGetMessageR GET
+/yesod/cpp/add/#Int/#Int YesodCppAddR GET
 /yesod/python/add/#Int/#Int PythonAddR GET
 /yesod/python/print/#Text PythonPrintR GET
 |]
@@ -46,6 +46,11 @@ getYesodCppGetMessageR = do
   message <- liftIO $ getMessagee >>= peekCString
   return $ pack $ "Yesod: " ++ message
 
+getYesodCppAddR :: Int -> Int -> HandlerFor App Text
+getYesodCppAddR x y = do
+  sumResult <- liftIO $ add (fromIntegral x) (fromIntegral y)
+  return $ pack $ "Yesod: Sum = " ++ show sumResult
+
 getYesodAddR :: Int -> Int -> HandlerFor App Text
 getYesodAddR x y = do
   sum <- liftIO $ add (fromIntegral x) (fromIntegral y)
@@ -66,6 +71,3 @@ yesodApp = do
   -- Set the DLL path
   setEnv "PATH" "ServerDependencies\\C++NativeExports"
   warp 3002 App
-
-tryReadProcess :: FilePath -> [String] -> String -> IO (Either String String)
-tryReadProcess cmd args input = catch (Right <$> readProcess cmd args input) (return . Left . show :: SomeException -> IO (Either String String))
