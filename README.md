@@ -1,5 +1,7 @@
 # Bones
 
+# Haskell Interoperability Webservice
+
 Install haskell 
 
 Build and run with stack 
@@ -26,6 +28,8 @@ http://localhost:3002/yesod/`
 `/cpp` to call into C++ dll
 
 `/cpp/add/x/y` C++ dll add function 
+
+`/python/scriptname.py` to run scripts you place in \ServerDependancies\PythonScripts (still working on calling python in haskell itself... inline-python has disappeared)
 
 
 I have not tested this on any OS other than windows -- you might need to rebuild DLLs if using another OS
