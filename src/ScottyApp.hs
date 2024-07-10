@@ -3,11 +3,14 @@
 module ScottyApp (runScottyApp) where -- scottyApp namespace collision so added run prefix
 
 import Web.Scotty
+import System.Directory (doesFileExist)
 import CppFFI
 import Foreign.C.String (peekCString)
 import Data.Text.Lazy (pack)
+import qualified Data.List as List
+import qualified Data.Text.Lazy as LT
 import Control.Monad.IO.Class (liftIO)
-import Lib (tryReadProcess)
+import Lib (tryReadProcess, tryCallCommand)
 
 runScottyApp :: IO ()
 runScottyApp = scotty 3001 $ do
@@ -30,3 +33,17 @@ runScottyApp = scotty 3001 $ do
       y <- captureParam "y"
       sumResult <- liftIO $ add (read x) (read y)
       text $ "Scotty: Sum = " <> (pack . show $ sumResult)
+
+    get "/scotty/python/:filename" $ do
+      filename <- param "filename"
+      let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
+      fileExists <- liftIO $ doesFileExist filepath
+      if not fileExists
+          then text "File does not exist"
+          else if not (".py" `List.isSuffixOf` filename)
+              then text "File is not a Python (.py) file"
+              else do
+                  result <- liftIO $ tryCallCommand filepath
+                  case result of
+                      Left err -> text (pack $ "Error: " ++ err)
+                      Right _ -> text "Python script executed successfully"
