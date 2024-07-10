@@ -35,7 +35,7 @@ runScottyApp = scotty 3001 $ do
       text $ "Scotty: Sum = " <> (pack . show $ sumResult)
 
     get "/scotty/python/:filename" $ do
-      filename <- param "filename"
+      filename <- captureParam "filename"
       let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
       fileExists <- liftIO $ doesFileExist filepath
       if not fileExists
