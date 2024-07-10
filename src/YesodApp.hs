@@ -65,7 +65,7 @@ getPythonR filename = do
                 result <- liftIO $ tryCallCommand filepath
                 case result of
                     Left err -> sendResponse (LT.pack $ "Error: " ++ err)
-                    Right output -> sendResponse (T.pack output)
+                    Right () -> sendResponse (T.pack "Python script executed successfully")
     
 yesodApp :: IO ()
 yesodApp = do

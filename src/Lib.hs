@@ -17,5 +17,5 @@ someFunc = T.putStrLn "From bones to a skeleton"
 tryReadProcess :: FilePath -> [String] -> String -> IO (Either String String)
 tryReadProcess cmd args input = catch (Right <$> readProcess cmd args input) (return . Left . show :: SomeException -> IO (Either String String))
 
-tryCallCommand :: String -> IO (Either String String)
-tryCallCommand cmd = catch (Right <$> readProcess "python" [cmd] "") (return . Left . show :: SomeException -> IO (Either String String))
+tryCallCommand :: FilePath -> IO (Either String ())
+tryCallCommand cmd = catch (callCommand cmd >> return (Right ())) (return . Left . show :: SomeException -> IO (Either String ()))

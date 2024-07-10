@@ -6,7 +6,8 @@ import Web.Scotty
 import System.Directory (doesFileExist)
 import CppFFI
 import Foreign.C.String (peekCString)
-import Data.Text.Lazy (pack, isSuffixOf)
+import Data.Text.Lazy (pack)
+import qualified Data.List as List
 import qualified Data.Text.Lazy as LT
 import Control.Monad.IO.Class (liftIO)
 import Lib (tryReadProcess, tryCallCommand)
@@ -34,15 +35,15 @@ runScottyApp = scotty 3001 $ do
       text $ "Scotty: Sum = " <> (pack . show $ sumResult)
 
     get "/scotty/python/:filename" $ do
-        filename <- captureParam "filename"
-        let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
-        fileExists <- liftIO $ doesFileExist filepath
-        if not fileExists
-            then text "File does not exist"
-            else if not (LT.pack ".py" `isSuffixOf` LT.pack filename)
-                then text "File is not a Python (.py) file" --maybe this doesnt matter in the future, but for now... 
-                else do
-                    result <- liftIO $ tryCallCommand ("python " ++ filepath)
-                    case result of
-                        Left err -> text (pack $ "Error: " ++ err)
-                        Right _ -> text "Python script executed successfully"
+      filename <- param "filename"
+      let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
+      fileExists <- liftIO $ doesFileExist filepath
+      if not fileExists
+          then text "File does not exist"
+          else if not (".py" `List.isSuffixOf` filename)
+              then text "File is not a Python (.py) file"
+              else do
+                  result <- liftIO $ tryCallCommand filepath
+                  case result of
+                      Left err -> text (pack $ "Error: " ++ err)
+                      Right _ -> text "Python script executed successfully"

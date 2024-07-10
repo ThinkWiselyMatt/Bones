@@ -21,7 +21,7 @@ type API = "servant" :> Get '[PlainText] Text
       :<|> "servant" :> "csharp" :> Get '[PlainText] Text
       :<|> "servant" :> "cpp" :> Get '[PlainText] Text
       :<|> "servant" :> "cpp" :> "add" :> Capture "x" Int :> Capture "y" Int :> Get '[PlainText] Text
-      :<|> "python" :> Capture "filename" String :> Get '[PlainText] Text
+      :<|> "servant" :> "python" :> Capture "filename" String :> Get '[PlainText] Text
 
 server :: Server API
 server = servantHandler :<|> servantCSharpHandler :<|> servantCppGetMessageHandler :<|> servantCppAddHandler :<|> servantPythonScriptHandler
@@ -59,7 +59,7 @@ servantPythonScriptHandler filename = do
                 result <- liftIO $ tryCallCommand filepath
                 case result of
                     Left err -> return $ T.pack $ "Error: " ++ err
-                    Right output -> return $ T.pack output
+                    Right () -> return $ T.pack "Python script executed successfully"
 
 api :: Proxy API
 api = Proxy
