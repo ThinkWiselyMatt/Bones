@@ -40,6 +40,7 @@ library
   build-depends:
       QuickCheck
     , base >=4.7 && <5
+    , directory
     , hspec
     , http-client
     , http-client-tls
@@ -66,6 +67,7 @@ executable Bones-exe
       Bones
     , QuickCheck
     , base >=4.7 && <5
+    , directory
     , http-client
     , http-client-tls
     , scotty
@@ -94,6 +96,7 @@ test-suite Bones-test
     , QuickCheck
     , base >=4.7 && <5
     , bytestring
+    , directory
     , hspec
     , http-client
     , http-client-tls

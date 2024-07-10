@@ -11,11 +11,15 @@
 module YesodApp (yesodApp) where
 
 import Yesod
+import System.Directory (doesFileExist)
 import CppFFI
 import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
+import qualified Data.List as List
+import qualified Data.Text as T
+import qualified Data.Text.Lazy as LT
 import Data.Text (Text, pack)
-import Lib (tryReadProcess)
+import Lib (tryReadProcess, tryCallCommand)
 
 data App = App
 
@@ -24,6 +28,7 @@ mkYesod "App" [parseRoutes|
 /yesod/csharp YesodCSharpR GET
 /yesod/cpp YesodCppGetMessageR GET
 /yesod/cpp/add/#Int/#Int YesodCppAddR GET
+/yesod/python/#String PythonR GET
 |]
 
 instance Yesod App
@@ -31,22 +36,36 @@ instance Yesod App
 getYesodR :: HandlerFor App Html
 getYesodR = defaultLayout [whamlet|Hello from Yesod!|]
 
-getYesodCSharpR :: HandlerFor App Text
+getYesodCSharpR :: HandlerFor App T.Text
 getYesodCSharpR = do
   result <- liftIO $ tryReadProcess "ServerDependancies\\CSharpHelloWorld\\HelloWorldLibrary.exe" [] ""
   case result of
-    Left err -> return (pack $ "Yesod: " ++ err)
-    Right output -> return (pack $ "Yesod: " ++ output)
+    Left err -> return (T.pack $ "Yesod: " ++ err)
+    Right output -> return (T.pack $ "Yesod: " ++ output)
 
-getYesodCppGetMessageR :: HandlerFor App Text
+getYesodCppGetMessageR :: HandlerFor App T.Text
 getYesodCppGetMessageR = do
   message <- liftIO $ getMessagee >>= peekCString
-  return $ pack $ "Yesod: " ++ message
+  return $ T.pack $ "Yesod: " ++ message
 
-getYesodCppAddR :: Int -> Int -> HandlerFor App Text
+getYesodCppAddR :: Int -> Int -> HandlerFor App T.Text
 getYesodCppAddR x y = do
   sumResult <- liftIO $ add (fromIntegral x) (fromIntegral y)
-  return $ pack $ "Yesod: Sum = " ++ show sumResult
+  return $ T.pack $ "Yesod: Sum = " ++ show sumResult
+
+getPythonR :: String -> Handler Html
+getPythonR filename = do
+    let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
+    fileExists <- liftIO $ doesFileExist filepath
+    if not fileExists
+        then sendResponse (T.pack "File does not exist")
+        else if not (".py" `List.isSuffixOf` filename)
+            then sendResponse (LT.pack "File is not a Python (.py) file")
+            else do
+                result <- liftIO $ tryCallCommand filepath
+                case result of
+                    Left err -> sendResponse (LT.pack $ "Error: " ++ err)
+                    Right output -> sendResponse (T.pack output)
     
 yesodApp :: IO ()
 yesodApp = do
