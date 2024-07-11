@@ -10,7 +10,7 @@ import Control.Concurrent (threadDelay, ThreadId)
 import System.IO (Handle)
 
 logOutput :: Bool
-logOutput = False -- Set this to True if you want to see logs in console -- logs in text file not working still 
+logOutput = True -- Set this to True if you want to see logs in console -- logs in text file not working still 
 
 main :: IO ()
 main = do
