@@ -7,7 +7,7 @@ import Control.Monad (forM_)
 
 startServices :: Bool -> IO (ProcessHandle, [ThreadId], Handle)
 startServices logOutput = do
-  logFile <- openFile "test_output.log" AppendMode -- This will append to the file (doesn't work still empty log file TODO)
+  logFile <- openFile "test_output.log" AppendMode
   (_, Just hout, Just herr, ph) <- createProcess (proc "stack" ["exec", "bones-exe"])
     { std_out = CreatePipe, std_err = CreatePipe }
   
@@ -16,10 +16,7 @@ startServices logOutput = do
         putStrLn "Reading output from handle..." -- Debug statement
         if logOutput
           then mapM_ (hPutStrLn stderr) (lines contents)
-          else do
-            hPutStr logFile contents
-            hFlush logFile
-            hClose logFile
+          else mapM_ (hPutStrLn logFile) (lines contents) >> hFlush logFile
   
   outThread <- handleOutput hout
   errThread <- handleOutput herr
@@ -29,11 +26,18 @@ startServices logOutput = do
 
   return (ph, [outThread, errThread], logFile)
 
-stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> IO () --not sure why passing bool for logging but maybe we add it later 
+stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> IO () 
 stopServices _ (ph, threads, logFile) = do
-  forM_ threads killThread
+  putStrLn "Stopping services..."
+  forM_ threads $ \thread -> do
+    putStrLn $ "Killing thread: " ++ show thread
+    killThread thread
+  putStrLn "All threads killed. Terminating process..."
   terminateProcess ph
+  putStrLn "Waiting for process to terminate..."
   _ <- waitForProcess ph
+  putStrLn "Process terminated. Flushing and closing log file..."
   hFlush logFile
   hClose logFile
+  putStrLn "Services stopped."
   return ()

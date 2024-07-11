@@ -33,7 +33,8 @@ spec = describe "QuickCheck tests for all endpoints" $ do
       all id results `shouldBe` True
     
     it "Service still running if you want to test anything in browser -- hit enter to continue" $ \_ -> do
-      (1 + 1) `shouldBe` 2
+      _ <- getLine
+      return ()
 
 contains :: String -> String -> Bool
 contains = isInfixOf
