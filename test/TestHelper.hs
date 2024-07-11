@@ -31,9 +31,7 @@ startServices logOutput = do
 stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> LoggingT IO ()
 stopServices _ (ph, threads, logFile) = do
   logInfoN $ pack "Stopping services..."
-  liftIO $ terminateProcess ph
-  logInfoN $ pack "Waiting for process to terminate..."
-  _ <- liftIO $ waitForProcess ph
+  liftIO $ createProcess (proc "wmic" ["process", "where", "name='bones-exe.exe'", "call", "terminate"])--windows only --todo way to detect OS and do it different for Linux etc
   logInfoN $ pack "Process terminated. Flushing and closing log file..."
   liftIO $ hFlush logFile
   liftIO $ hClose logFile
