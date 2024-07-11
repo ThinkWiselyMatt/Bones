@@ -4,3 +4,4 @@ client_session_key.aes
 *.log
 ServerDependancies/PythonScripts/*.py
 *.log
+logs/*.*
