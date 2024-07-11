@@ -33,10 +33,6 @@ startServices logOutput = do
 stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> LoggingT IO ()
 stopServices _ (ph, threads, logFile) = do
   logInfoN $ pack "Stopping services..."
-  forM_ threads $ \thread -> do
-    logInfoN $ pack $ "Killing thread: " ++ show thread
-    liftIO $ killThread thread
-  logInfoN $ pack "All threads killed. Terminating process..."
   liftIO $ terminateProcess ph
   logInfoN $ pack "Waiting for process to terminate..."
   _ <- liftIO $ waitForProcess ph
