@@ -7,19 +7,11 @@ import Test.Hspec
 import Network.HTTP.Client
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import qualified Data.ByteString.Lazy.Char8 as L8
-import Control.Concurrent (threadDelay, forkIO, killThread, ThreadId)
-import System.IO (hGetContents, hPutStr, hPutStrLn, stderr, openFile, IOMode(AppendMode), hFlush, Handle, hClose)
-import System.Process (createProcess, proc, terminateProcess, waitForProcess, ProcessHandle, StdStream(CreatePipe), std_out, std_err)
 import Data.Text (isInfixOf)
 import Data.Text.Encoding (decodeUtf8)
-import TestHelper (startServices, stopServices)
-
-logOutput :: Bool
-logOutput = False -- Set this to True if you want to see logs in console
 
 spec :: Spec
-spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $ do
-  describe "Web Service Apps" $ do
+spec = describe "Web Service Apps" $ do
     it "responds from Scotty app" $ \_ -> do
       manager <- newManager tlsManagerSettings
       request <- parseRequest "http://localhost:3001/scotty"
@@ -110,7 +102,5 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
       let body = L8.unpack (responseBody response)
       body `shouldContain` "Servant:"
       body `shouldContain` "Sum = 42"
-
-    it "Service still running if you want to test anything in browser -- hit enter to continue" $ \_ -> do
-      (1 + 1) `shouldBe` 2
+--continues on to quickcheck specs 
 

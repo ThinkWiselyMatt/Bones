@@ -2,7 +2,7 @@ module TestHelper (startServices, stopServices) where
 --dont call this from outside of tests / specs, services get started in Main
 import System.IO (openFile, hGetContents, hPutStr, hFlush, hClose, hPutStrLn, stderr, Handle, IOMode(AppendMode))
 import System.Process (createProcess, proc, CreateProcess(..), StdStream(CreatePipe), ProcessHandle, terminateProcess, waitForProcess)
-import Control.Concurrent (forkIO, ThreadId, killThread)
+import Control.Concurrent (forkIO, ThreadId, killThread, threadDelay)
 import Control.Monad (forM_)
 
 startServices :: Bool -> IO (ProcessHandle, [ThreadId], Handle)
@@ -23,6 +23,9 @@ startServices logOutput = do
   
   outThread <- handleOutput hout
   errThread <- handleOutput herr
+
+  -- Give the services some time to start
+  threadDelay 2000000  -- 2 seconds
 
   return (ph, [outThread, errThread], logFile)
 

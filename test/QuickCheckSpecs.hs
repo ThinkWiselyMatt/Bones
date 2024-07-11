@@ -9,23 +9,22 @@ import qualified Data.ByteString.Lazy.Char8 as L8
 import qualified Data.ByteString.Char8 as S8
 import Control.Concurrent (threadDelay)
 import Control.Exception (try, SomeException)
-import TestHelper (startServices, stopServices)
 
-logOutput :: Bool
-logOutput = False -- Set this to True if you want to see logs in console
 
 spec :: Spec
-spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $ do
-  describe "QuickCheck tests for all endpoints" $ do
+spec = describe "QuickCheck tests for all endpoints" $ do
     it "quickcheck tests for all CSharp endpoints" $ \_ -> do
       manager <- newManager defaultManagerSettings
       responses <- retry 3 $ mapM (makeRequest manager) csharpEndpoints
-      all (\body -> S8.isInfixOf "Hello from C#" (L8.toStrict body)) responses `shouldBe` True
+      all (S8.isInfixOf "Hello from C#" . L8.toStrict) responses `shouldBe` True
 
     it "quickcheck tests for all non CSharp endpoints" $ \_ -> do
       manager <- newManager defaultManagerSettings
       responses <- retry 3 $ mapM (makeRequest manager) baseEndpoints
-      all (\body -> not (S8.isInfixOf "Hello from C#" (L8.toStrict body))) responses `shouldBe` True
+      all (S8.isInfixOf "Hello from C#" . L8.toStrict) responses `shouldBe` False
+    
+    it "Service still running if you want to test anything in browser -- hit enter to continue" $ \_ -> do
+      (1 + 1) `shouldBe` 2
 
 
 makeRequest :: Manager -> String -> IO L8.ByteString
