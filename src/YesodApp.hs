@@ -19,8 +19,7 @@ import qualified Data.List as List
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as LT
 import Data.Text (Text, pack)
-import Lib (tryReadProcess, tryCallCommand)
-import Control.Monad.Logger (LoggingT, logInfoN)
+import Lib (tryReadProcess, tryCallCommand, logMessage)
 import Control.Monad.IO.Class (liftIO)
 import Network.HTTP.Types.Status (status200, status400, status404, status500)
 
@@ -71,9 +70,13 @@ getPythonR filename = do
                 Left err -> sendResponseStatus status500 (LT.pack $ "Error: " ++ err)
                 Right () -> sendResponseStatus status200 (T.pack "Python script executed successfully")
     
-yesodApp :: LoggingT IO ()
+yesodApp :: IO ()
 yesodApp = do
-    logInfoN "Setting environment variable for DLL path..."
-    liftIO $ setEnv "PATH" "ServerDependencies\\C++NativeExports"
-    logInfoN "Starting Yesod App..."
+    logYesod "Setting environment variable for DLL path..."
+    liftIO $ setEnv "PATH" "ServerDependancies\\C++NativeExports"
+    logYesod "Starting Yesod App..."
     liftIO $ warp 3002 App
+
+-- Helper function to log messages to a specific Yesod log file
+logYesod :: String -> IO ()
+logYesod = logMessage "yesodlogfile.txt"

@@ -4,12 +4,15 @@ module Lib
     ( 
         someFunc,
         tryReadProcess,
-        tryCallCommand
+        tryCallCommand,
+        logMessage
     ) where
 
 import qualified Data.Text.IO as T
 import System.Process (readProcess, callCommand)
 import Control.Exception (catch, SomeException)
+import Control.Logger.Simple
+import Data.Text (Text, pack)
 
 someFunc :: IO ()
 someFunc = T.putStrLn "From bones to a skeleton"
@@ -19,3 +22,7 @@ tryReadProcess cmd args input = catch (Right <$> readProcess cmd args input) (re
 
 tryCallCommand :: FilePath -> IO (Either String ())
 tryCallCommand cmd = catch (callCommand cmd >> return (Right ())) (return . Left . show :: SomeException -> IO (Either String ()))
+
+logMessage :: FilePath -> String -> IO ()
+logMessage logFile msg = 
+    withGlobalLogging (LogConfig (Just logFile) True) $ logInfo (pack msg)

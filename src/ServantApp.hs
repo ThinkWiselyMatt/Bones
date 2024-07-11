@@ -14,8 +14,7 @@ import Data.Text (Text, pack)
 import CppFFI
 import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
-import Lib (tryReadProcess, tryCallCommand)
-import Control.Monad.Logger (LoggingT, logInfoN)
+import Lib (tryReadProcess, tryCallCommand, logMessage)
 import Control.Monad.IO.Class (liftIO)
 
 type API = "servant" :> Get '[PlainText] Text
@@ -68,9 +67,13 @@ api = Proxy
 app :: Application
 app = serve api server
 
-servantApp :: LoggingT IO ()
+servantApp :: IO ()
 servantApp = do
-  logInfoN "Setting environment variable for DLL path..."
-  liftIO $ setEnv "PATH" "ServerDependencies\\C++NativeExports"
-  logInfoN "Starting Servant App..."
+  logServant "Setting environment variable for DLL path..."
+  setEnv "PATH" "\"ServerDependancies\\C++NativeExports\""
+  logServant "Starting Servant App..."
   liftIO $ run 3003 app
+
+-- Helper function to log messages to a specific Servant log file
+logServant :: String -> IO ()
+logServant = logMessage "servantlogfile.txt"

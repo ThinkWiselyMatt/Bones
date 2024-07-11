@@ -5,7 +5,7 @@ cabal-version: 2.2
 -- see: https://github.com/sol/hpack
 
 name:           Bones
-version:        0.1.0.0
+version:        1.1.0.1
 description:    Please see the README on GitHub at <https://github.com/ThinkWiselyMatt/Bones#readme>
 homepage:       https://github.com/ThinkWiselyMatt/Bones#readme
 bug-reports:    https://github.com/ThinkWiselyMatt/Bones/issues
@@ -51,6 +51,7 @@ library
     , scotty
     , servant
     , servant-server
+    , simple-logger
     , text
     , warp
     , yesod
@@ -79,6 +80,7 @@ executable Bones-exe
     , scotty
     , servant
     , servant-server
+    , simple-logger
     , text
     , warp
     , yesod
@@ -114,6 +116,7 @@ test-suite Bones-test
     , scotty
     , servant
     , servant-server
+    , simple-logger
     , text
     , warp
     , yesod

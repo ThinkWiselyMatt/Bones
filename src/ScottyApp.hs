@@ -10,15 +10,14 @@ import Data.Text.Lazy (Text, pack)
 import qualified Data.List as List
 import qualified Data.Text.Lazy as LT
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Logger (LoggingT, logInfoN)
-import Lib (tryReadProcess, tryCallCommand)
+import Lib (tryReadProcess, tryCallCommand, logMessage)
 import Foreign.Ptr (nullPtr)
-import System.Log.FastLogger (fromLogStr)
 
-runScottyApp :: LoggingT IO ()
+
+runScottyApp :: IO ()
 runScottyApp = do
-    logInfoN "Starting Scotty App..."
-    liftIO $ scotty 3001 $ do
+    logScotty "Starting Scotty App..."
+    scotty 3001 $ do
         get "/scotty" $ text "Hello from Scotty!"
 
         get "/scotty/csharp" $ do
@@ -37,13 +36,13 @@ runScottyApp = do
                     text $ pack $ "Scotty: " ++ msg
 
         get "/scotty/cpp/add/:x/:y" $ do
-            x <- captureParam "x"
-            y <- captureParam "y"
+            x <- param "x"
+            y <- param "y"
             sumResult <- liftIO $ add (read x) (read y)
             text $ "Scotty: Sum = " <> (pack . show $ sumResult)
 
         get "/scotty/python/:filename" $ do
-            filename <- captureParam "filename"
+            filename <- param "filename"
             let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
             fileExists <- liftIO $ doesFileExist filepath
             if not fileExists
@@ -55,3 +54,7 @@ runScottyApp = do
                         case result of
                             Left err -> text (pack $ "Error: " ++ err)
                             Right _ -> text "Python script executed successfully"
+
+-- Helper function to log messages to a specific log file
+logScotty :: String -> IO ()
+logScotty = logMessage "scottylogfile.txt"

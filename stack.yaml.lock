@@ -3,7 +3,14 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: simple-logger-0.1.1@sha256:a21912c52a702b4e3f2376f61e5bde61cb4504debe5269dd9f9dc762097ffdbd,1098
+    pantry-tree:
+      sha256: 2c5f5491d5269854fdaeeb8c139abd318507ab9b0ba95730781b880adb6864c9
+      size: 376
+  original:
+    hackage: simple-logger-0.1.1
 snapshots:
 - completed:
     sha256: 87da71cb0ae9ee1ea1bf51a8eb9812f39f779be76abc0a3c926defd8afda05d1

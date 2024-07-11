@@ -10,29 +10,26 @@ import qualified Data.Text.IO as TIO
 import qualified ScottyApp
 import qualified YesodApp
 import qualified ServantApp
-import Lib (someFunc)
+import Lib (someFunc, logMessage)
 import Data.Text.Encoding (decodeUtf8)
+import Control.Logger.Simple
 
 main :: IO ()
 main = do
-    -- Open the log file
-    logFile <- openFile "service_output.log" AppendMode
-    -- Start logging within the LoggingT monad
-    runStdoutLoggingT $ do
         -- Log the message from someFunc
         liftIO someFunc
-        logInfoN "Starting all applications..."
-        _ <- liftIO $ forkIO $ runLoggingToFile ScottyApp.runScottyApp logFile
-        _ <- liftIO $ forkIO $ runLoggingToFile YesodApp.yesodApp logFile
-        _ <- liftIO $ forkIO $ runLoggingToFile ServantApp.servantApp logFile
-        logInfoN "Applications are running. Press Ctrl+C to exit."
+        logMain "Starting all applications..."
+        void <- forkIO ScottyApp.runScottyApp
+        void <- forkIO YesodApp.yesodApp
+        void <- forkIO ServantApp.servantApp
+        logMain "Applications are running. Press Ctrl+C to exit."
 
         -- Keep the main thread running indefinitely
         let loop = do
                 threadDelay 1000000  -- 1 second
                 loop
         liftIO loop
-        liftIO $ hClose logFile
 
-runLoggingToFile :: LoggingT IO () -> Handle -> IO ()
-runLoggingToFile action logFile = runLoggingT action (\_ _ _ msg -> TIO.hPutStrLn logFile (decodeUtf8 $ fromLogStr msg))
+-- Helper function to log messages to a specific main log file
+logMain :: String -> IO ()
+logMain = logMessage "mainlogfile.txt"
