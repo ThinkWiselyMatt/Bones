@@ -12,7 +12,10 @@ import System.IO (hGetContents, hPutStr, hPutStrLn, stderr, openFile, IOMode(App
 import System.Process (createProcess, proc, terminateProcess, waitForProcess, ProcessHandle, StdStream(CreatePipe), std_out, std_err)
 import Data.Text (isInfixOf)
 import Data.Text.Encoding (decodeUtf8)
-import Control.Monad (forM_)
+import TestHelper (startServices, stopServices)
+
+logOutput :: Bool
+logOutput = False -- Set this to True if you want to see logs in console
 
 spec :: Spec
 spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $ do
@@ -111,37 +114,3 @@ spec = beforeAll (startServices logOutput) $ afterAll (stopServices logOutput) $
     it "Service still running if you want to test anything in browser -- hit enter to continue" $ \_ -> do
       (1 + 1) `shouldBe` 2
 
-logOutput :: Bool
-logOutput = False -- Set this to True if you want to see logs
-
-startServices :: Bool -> IO (ProcessHandle, [ThreadId], Handle)
-startServices logOutput = do
-  logFile <- openFile "test_output.log" AppendMode -- This will append to the file (doesn't work still empty log file TODO)
-  (_, Just hout, Just herr, ph) <- createProcess (proc "stack" ["exec", "bones-exe"])
-    { std_out = CreatePipe, std_err = CreatePipe }
-  
-  let handleOutput handle = forkIO $ do
-        contents <- hGetContents handle
-        putStrLn "Reading output from handle..." -- Debug statement
-        if logOutput
-          then mapM_ (hPutStrLn stderr) (lines contents)
-          else do
-            hPutStr logFile contents
-            hFlush logFile
-            hClose logFile
-  
-  outThread <- handleOutput hout
-  errThread <- handleOutput herr
-
-  -- Give the services some time to start
-  threadDelay 5000000  -- 5 seconds
-  return (ph, [outThread, errThread], logFile)
-
-stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> IO ()
-stopServices _ (ph, threads, logFile) = do
-  forM_ threads killThread
-  terminateProcess ph
-  _ <- waitForProcess ph
-  hFlush logFile
-  hClose logFile
-  return ()

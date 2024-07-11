@@ -84,6 +84,7 @@ test-suite Bones-test
   main-is: Spec.hs
   other-modules:
       QuickCheckSpecs
+      TestHelper
       WebServiceSpecs
       Paths_Bones
   autogen-modules:
