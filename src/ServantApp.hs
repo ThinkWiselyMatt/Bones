@@ -70,7 +70,7 @@ app = serve api server
 servantApp :: IO ()
 servantApp = do
   logServant "Setting environment variable for DLL path..."
-  setEnv "PATH" "\"ServerDependancies\\C++NativeExports\""
+  setEnv "PATH" "native"
   logServant "Starting Servant App..."
   liftIO $ run 3003 app
 

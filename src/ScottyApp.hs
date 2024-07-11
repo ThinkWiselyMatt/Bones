@@ -36,13 +36,13 @@ runScottyApp = do
                     text $ pack $ "Scotty: " ++ msg
 
         get "/scotty/cpp/add/:x/:y" $ do
-            x <- param "x"
-            y <- param "y"
+            x <- captureParam "x"
+            y <- captureParam "y"
             sumResult <- liftIO $ add (read x) (read y)
             text $ "Scotty: Sum = " <> (pack . show $ sumResult)
 
         get "/scotty/python/:filename" $ do
-            filename <- param "filename"
+            filename <- captureParam "filename"
             let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
             fileExists <- liftIO $ doesFileExist filepath
             if not fileExists

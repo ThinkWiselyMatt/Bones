@@ -73,7 +73,7 @@ getPythonR filename = do
 yesodApp :: IO ()
 yesodApp = do
     logYesod "Setting environment variable for DLL path..."
-    liftIO $ setEnv "PATH" "ServerDependancies\\C++NativeExports"
+    liftIO $ setEnv "PATH" "native"
     logYesod "Starting Yesod App..."
     liftIO $ warp 3002 App
 

@@ -57,7 +57,7 @@ library:
     - ServantApp
     - CppFFI
   extra-lib-dirs:
-      "C:/Users/Owner/Desktop/Development/Bones/ServerDependancies/C++NativeExports"
+      "C:/Users/Owner/Desktop/Development/Bones/native"
   extra-libraries:
     - NativeExports
   other-modules: []
