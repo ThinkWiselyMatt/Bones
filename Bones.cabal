@@ -41,9 +41,12 @@ library
       QuickCheck
     , base >=4.7 && <5
     , directory
+    , fast-logger
     , hspec
     , http-client
     , http-client-tls
+    , http-types
+    , monad-logger
     , process
     , scotty
     , servant
@@ -68,8 +71,11 @@ executable Bones-exe
     , QuickCheck
     , base >=4.7 && <5
     , directory
+    , fast-logger
     , http-client
     , http-client-tls
+    , http-types
+    , monad-logger
     , scotty
     , servant
     , servant-server
@@ -98,9 +104,12 @@ test-suite Bones-test
     , base >=4.7 && <5
     , bytestring
     , directory
+    , fast-logger
     , hspec
     , http-client
     , http-client-tls
+    , http-types
+    , monad-logger
     , process
     , scotty
     , servant

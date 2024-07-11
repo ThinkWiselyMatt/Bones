@@ -32,6 +32,9 @@ dependencies:
 - http-client-tls
 - QuickCheck
 - directory
+- monad-logger
+- http-types
+- fast-logger
 
 ghc-options:
 - -Wall

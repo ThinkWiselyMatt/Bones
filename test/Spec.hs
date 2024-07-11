@@ -8,20 +8,22 @@ import TestHelper (startServices, stopServices)
 import System.Process (ProcessHandle)
 import Control.Concurrent (threadDelay, ThreadId)
 import System.IO (Handle)
+import Control.Monad.Logger (runStdoutLoggingT, LoggingT)
 
 logOutput :: Bool
 logOutput = False -- Set this to True if you want to see logs in console -- logs in text file not working still 
 
 main :: IO ()
 main = do
--- Start the services before running the tests
-  putStrLn "Starting services..."
-  (ph, threads, logFile) <- startServices logOutput
-  putStrLn "Services started. Running tests..."
-  hspec $ do
-    describe "WebService Specs" WebServiceSpecs.spec
-    describe "QuickCheck Specs" QuickCheckSpecs.spec
-  -- Stop the services after running the tests
-  putStrLn "Tests completed. Stopping services..."
-  stopServices logOutput (ph, threads, logFile)
-  putStrLn "Services stopped."
+    putStrLn "Starting services..."
+    (ph, threads, logFile) <- startServices logOutput
+    putStrLn "Services started. Running tests..."
+
+    -- Running the tests
+    hspec $ do
+        describe "WebService Specs" WebServiceSpecs.spec
+        describe "QuickCheck Specs" QuickCheckSpecs.spec
+
+    putStrLn "Stopping services..."
+    runStdoutLoggingT $ stopServices logOutput (ph, threads, logFile)
+    putStrLn "Services stopped."

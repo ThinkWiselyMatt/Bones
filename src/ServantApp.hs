@@ -11,11 +11,12 @@ import qualified Data.List as List
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as LT
 import Data.Text (Text, pack)
-import Control.Monad.IO.Class (liftIO)
 import CppFFI
 import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
 import Lib (tryReadProcess, tryCallCommand)
+import Control.Monad.Logger (LoggingT, logInfoN)
+import Control.Monad.IO.Class (liftIO)
 
 type API = "servant" :> Get '[PlainText] Text
       :<|> "servant" :> "csharp" :> Get '[PlainText] Text
@@ -41,7 +42,7 @@ servantCppGetMessageHandler :: Handler Text
 servantCppGetMessageHandler = liftIO $ do
   message <- getMessagee >>= peekCString
   return $ T.pack $ "Servant: " ++ message
-    
+
 servantCppAddHandler :: Int -> Int -> Handler Text
 servantCppAddHandler x y = do
   result <- liftIO $ add (fromIntegral x) (fromIntegral y)
@@ -67,9 +68,9 @@ api = Proxy
 app :: Application
 app = serve api server
 
-servantApp :: IO ()
+servantApp :: LoggingT IO ()
 servantApp = do
-  -- Set the DLL path
-  setEnv "PATH" "ServerDependencies\\C++NativeExports"
-  run 3003 app
-
+  logInfoN "Setting environment variable for DLL path..."
+  liftIO $ setEnv "PATH" "ServerDependencies\\C++NativeExports"
+  logInfoN "Starting Servant App..."
+  liftIO $ run 3003 app
