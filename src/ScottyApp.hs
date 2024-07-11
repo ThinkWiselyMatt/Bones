@@ -57,4 +57,4 @@ runScottyApp = do
 
 -- Helper function to log messages to a specific log file
 logScotty :: String -> IO ()
-logScotty = logMessage "scottylogfile.txt"
+logScotty = logMessage "logs/scottylogfile.txt"

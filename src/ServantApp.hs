@@ -76,4 +76,4 @@ servantApp = do
 
 -- Helper function to log messages to a specific Servant log file
 logServant :: String -> IO ()
-logServant = logMessage "servantlogfile.txt"
+logServant = logMessage "logs/servantlogfile.txt"

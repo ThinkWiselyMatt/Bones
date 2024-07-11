@@ -7,24 +7,26 @@ import qualified QuickCheckSpecs (spec)
 import TestHelper (startServices, stopServices)
 import System.Process (ProcessHandle)
 import Control.Concurrent (threadDelay, ThreadId)
-import System.IO (Handle)
-import Control.Monad.Logger (runStdoutLoggingT, LoggingT, logInfoN)
 import Control.Monad.IO.Class (liftIO)
-
-logOutput :: Bool
-logOutput = False -- Set this to True if you want to see logs in console
+import Lib(logMessage)
+import System.Directory (createDirectoryIfMissing)
 
 main :: IO ()
-main =  runStdoutLoggingT $ do
-    logInfoN "Starting services..."
-    (ph, threads, logFile) <- startServices logOutput
-    logInfoN "Services started. Running tests..."
+main = do
+    createDirectoryIfMissing True "logs"
+    logSpec "Starting services..."
+    ph <- startServices
+    logSpec "Services started. Running tests..."
 
     -- Running the tests
     liftIO $ hspec $ do
         describe "WebService Specs" WebServiceSpecs.spec
         describe "QuickCheck Specs" QuickCheckSpecs.spec
 
-    logInfoN "Stopping services..."
-    stopServices logOutput (ph, threads, logFile)
-    logInfoN "Services stopped."
+    logSpec "Stopping services..."
+    stopServices ph
+    logSpec "Services stopped."
+
+-- Helper function to log messages to a specific log file
+logSpec :: String -> IO ()
+logSpec = logMessage "logs/spec.txt"

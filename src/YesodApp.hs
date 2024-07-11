@@ -79,4 +79,4 @@ yesodApp = do
 
 -- Helper function to log messages to a specific Yesod log file
 logYesod :: String -> IO ()
-logYesod = logMessage "yesodlogfile.txt"
+logYesod = logMessage "logs/yesodlogfile.txt"

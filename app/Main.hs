@@ -13,9 +13,11 @@ import qualified ServantApp
 import Lib (someFunc, logMessage)
 import Data.Text.Encoding (decodeUtf8)
 import Control.Logger.Simple
+import System.Directory (createDirectoryIfMissing)
 
 main :: IO ()
 main = do
+        createDirectoryIfMissing True "logs"
         -- Log the message from someFunc
         liftIO someFunc
         logMain "Starting all applications..."
@@ -32,4 +34,4 @@ main = do
 
 -- Helper function to log messages to a specific main log file
 logMain :: String -> IO ()
-logMain = logMessage "mainlogfile.txt"
+logMain = logMessage "logs/mainlogfile.txt"

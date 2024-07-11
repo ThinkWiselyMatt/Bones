@@ -4,36 +4,33 @@ import System.IO (openFile, hGetContents, hFlush, hClose, Handle, IOMode(AppendM
 import System.Process (createProcess, proc, CreateProcess(..), StdStream(CreatePipe), ProcessHandle, terminateProcess, waitForProcess)
 import Control.Concurrent (forkIO, ThreadId, killThread, threadDelay)
 import Control.Monad (forM_)
-import Control.Monad.Logger (runStdoutLoggingT, logInfoN, LoggingT)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text.IO as TIO
 import Data.Text (pack)
+import Lib(logMessage)
 
-startServices :: Bool -> LoggingT IO (ProcessHandle, [ThreadId], Handle)
-startServices logOutput = do
-    logFile <- liftIO $ openFile "test_output.log" AppendMode
-    (_, Just hout, Just herr, ph) <- liftIO $ createProcess (proc "stack" ["exec", "bones-exe"])
+startServices :: IO ProcessHandle
+startServices = do
+    (_, Just hout, Just herr, ph) <- createProcess (proc "stack" ["exec", "bones-exe"])
         { std_out = CreatePipe, std_err = CreatePipe }
 
-    let handleOutput handle logToStdErr = forkIO $ do
+    let handleOutput handle = forkIO $ do
             contents <- hGetContents handle
-            if logToStdErr
-                then mapM_ (TIO.hPutStrLn stderr . pack) (lines contents)
-                else mapM_ (TIO.hPutStrLn logFile . pack) (lines contents) >> hFlush logFile
+            mapM_ (TIO.hPutStrLn stderr . pack) (lines contents)
 
-    outThread <- liftIO $ handleOutput hout logOutput
-    errThread <- liftIO $ handleOutput herr logOutput
+    logTHelp  <- handleOutput hout
+    logTHelp  <- handleOutput herr
 
-    liftIO $ threadDelay 2000000  -- 2 seconds
+    threadDelay 2000000  -- 2 seconds
 
-    return (ph, [outThread, errThread], logFile)
+    return ph
 
-stopServices :: Bool -> (ProcessHandle, [ThreadId], Handle) -> LoggingT IO ()
-stopServices _ (ph, threads, logFile) = do
-  logInfoN $ pack "Stopping services..."
-  liftIO $ createProcess (proc "wmic" ["process", "where", "name='bones-exe.exe'", "call", "terminate"])--windows only --todo way to detect OS and do it different for Linux etc
-  logInfoN $ pack "Process terminated. Flushing and closing log file..."
-  liftIO $ hFlush logFile
-  liftIO $ hClose logFile
-  logInfoN $ pack "Services stopped."
+
+stopServices :: ProcessHandle -> IO ()
+stopServices ph = do
+  createProcess (proc "wmic" ["process", "where", "name='bones-exe.exe'", "call", "terminate"])  -- Windows only -- TODO: detect OS and handle differently for Linux, etc.
   return ()
+
+-- Helper function to log messages to a specific log file
+logTHelp :: String -> IO ()
+logTHelp = logMessage "logs/THelp.txt"
