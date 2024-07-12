@@ -34,7 +34,7 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   extra-lib-dirs:
-      C:/Users/Owner/Desktop/Development/Bones/native
+      ${LIBRARY_PATH}
   extra-libraries:
       NativeExports
   build-depends:
