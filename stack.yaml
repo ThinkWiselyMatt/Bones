@@ -63,10 +63,10 @@ extra-deps:
 # Extra directories used by Stack for building
 # Extra directories used by Stack for building
 extra-include-dirs:
-  - ./native
+  - ${LIBRARY_PATH}
 
 extra-lib-dirs:
-  - ./native
+  - ${INCLUDE_PATH}
 #
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
