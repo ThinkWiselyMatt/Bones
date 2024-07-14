@@ -6,8 +6,9 @@ module CppFFI
     add
   ) where
 
-import Foreign.C.String (CString)
+import Foreign.C.String (CString, peekCString)
 import Foreign.C.Types (CInt(..))
+import Foreign.Ptr (Ptr)
 
 -- | Calls the GetMessagee function in the C++ DLL
 foreign import ccall "GetMessagee" getMessagee :: IO CString
