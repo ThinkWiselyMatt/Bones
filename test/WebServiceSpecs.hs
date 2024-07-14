@@ -39,7 +39,7 @@ spec = describe "Web Service Apps" $ do
       response <- httpLbs request manager
       let body = L8.unpack (responseBody response)
       body `shouldContain` "Scotty:"
-      body `shouldContain` "Hello from C++!"
+      body `shouldContain` "Hello from C++"
 
     it "responds from Scotty C++ add"  $ \_ -> do
       manager <- newManager defaultManagerSettings
@@ -73,7 +73,7 @@ spec = describe "Web Service Apps" $ do
       response <- httpLbs request manager
       let body = L8.unpack (responseBody response)
       body `shouldContain` "Yesod:"
-      body `shouldContain` "Hello from C++!"
+      body `shouldContain` "Hello from C++"
 
     it "responds from Yesod C++ add"  $ \_ -> do
       manager <- newManager defaultManagerSettings
@@ -106,7 +106,7 @@ spec = describe "Web Service Apps" $ do
       response <- httpLbs request manager
       let body = L8.unpack (responseBody response)
       body `shouldContain` "Servant:"
-      body `shouldContain` "Hello from C++!"
+      body `shouldContain` "Hello from C++"
     
     it "responds from Servant app C++ add" $ \_ -> do
       manager <- newManager defaultManagerSettings

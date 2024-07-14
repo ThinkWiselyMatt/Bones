@@ -19,10 +19,17 @@ startServices logMar = do
 
 
 stopServices :: ProcessHandle -> MVar () -> IO ()
-stopServices ph logMar = do
-  _ <- createProcess (proc "wmic" ["process", "where", "name='bones-exe.exe'", "call", "terminate"])  -- Windows only -- TODO: detect OS and handle differently for Linux, etc.
+stopServices ph logMVar = do
+#ifdef mingw32_HOST_OS
+  -- Windows specific command to terminate the process
+  _ <- createProcess (proc "wmic" ["process", "where", "name='bones-exe.exe'", "call", "terminate"])
+#else
+  -- Non-Windows (Linux/Ubuntu) specific command to terminate the process
+  terminateProcess ph
+  _ <- waitForProcess ph
+#endif
   return ()
-
+  
 -- Helper function to log messages to a specific log file
 logTHelp :: MVar () -> String -> IO ()
 logTHelp logMVar msg = withMVar logMVar $ \_ -> logMessage "logs/THelp.txt" msg
