@@ -13,14 +13,16 @@ import Control.Exception (try, SomeException)
 import Text.Read (readMaybe)
 import Data.List (isPrefixOf, find, isInfixOf, stripPrefix)
 import Data.Char (isSpace)
-
+import Control.Monad (when)
+import System.Info (os)
 
 spec :: Spec
 spec = describe "QuickCheck tests for all endpoints" $ do
     it "quickcheck tests for all CSharp endpoints" $ \_ -> do
-      manager <- newManager defaultManagerSettings
-      responses <- retry 3 $ mapM (makeRequest manager) csharpEndpoints
-      all (S8.isInfixOf "Hello from C#" . L8.toStrict) responses `shouldBe` True
+      when (os /= "linux") $ do
+        manager <- newManager defaultManagerSettings
+        responses <- retry 3 $ mapM (makeRequest manager) csharpEndpoints
+        all (S8.isInfixOf "Hello from C#" . L8.toStrict) responses `shouldBe` True
 
     it "quickcheck tests for all non CSharp endpoints" $ \_ -> do
       manager <- newManager defaultManagerSettings

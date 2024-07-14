@@ -36,6 +36,7 @@ dependencies:
 - http-types
 - fast-logger
 - simple-logger
+- filepath
 
 ghc-options:
 - -Wall
@@ -57,7 +58,7 @@ library:
     - ServantApp
     - CppFFI
   extra-lib-dirs:
-      "C:/Users/Owner/Desktop/Development/Bones/native"
+      "${pkgroot}/native"
   extra-libraries:
     - NativeExports
   other-modules: []

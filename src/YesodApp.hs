@@ -11,7 +11,7 @@
 module YesodApp (yesodApp) where
 
 import Yesod
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, getCurrentDirectory)
 import CppFFI
 import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
@@ -22,6 +22,8 @@ import Data.Text (Text, pack)
 import Lib (tryReadProcess, tryCallCommand, logMessage)
 import Control.Monad.IO.Class (liftIO)
 import Network.HTTP.Types.Status (status200, status400, status404, status500)
+import System.Info (os)
+import System.FilePath ((</>), takeExtension)
 
 
 data App = App
@@ -72,8 +74,10 @@ getPythonR filename = do
     
 yesodApp :: IO ()
 yesodApp = do
+    currentDir <- getCurrentDirectory
+    let nativeDir = currentDir </> "native"
     logYesod "Setting environment variable for DLL path..."
-    liftIO $ setEnv "PATH" "native"
+    liftIO $ setEnv "PATH" nativeDir
     logYesod "Starting Yesod App..."
     liftIO $ warp 3002 App
 

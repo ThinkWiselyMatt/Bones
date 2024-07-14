@@ -5,7 +5,7 @@
 module ServantApp (servantApp) where
 
 import Servant
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, getCurrentDirectory)
 import Network.Wai.Handler.Warp (run)
 import qualified Data.List as List
 import qualified Data.Text as T
@@ -16,6 +16,8 @@ import Foreign.C.String (peekCString)
 import System.Environment (setEnv)
 import Lib (tryReadProcess, tryCallCommand, logMessage)
 import Control.Monad.IO.Class (liftIO)
+import System.Info (os)
+import System.FilePath ((</>), takeExtension)
 
 type API = "servant" :> Get '[PlainText] Text
       :<|> "servant" :> "csharp" :> Get '[PlainText] Text
@@ -69,8 +71,10 @@ app = serve api server
 
 servantApp :: IO ()
 servantApp = do
+  currentDir <- getCurrentDirectory
+  let nativeDir = currentDir </> "native" 
   logServant "Setting environment variable for DLL path..."
-  setEnv "PATH" "native"
+  setEnv "PATH" nativeDir
   logServant "Starting Servant App..."
   liftIO $ run 3003 app
 

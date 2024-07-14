@@ -3,7 +3,7 @@
 module ScottyApp (runScottyApp) where -- scottyApp namespace collision so added run prefix
 
 import Web.Scotty
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, getCurrentDirectory)
 import CppFFI
 import Foreign.C.String (peekCString)
 import Data.Text.Lazy (Text, pack)
@@ -12,16 +12,21 @@ import qualified Data.Text.Lazy as LT
 import Control.Monad.IO.Class (liftIO)
 import Lib (tryReadProcess, tryCallCommand, logMessage)
 import Foreign.Ptr (nullPtr)
+import System.Info (os)
+import System.FilePath ((</>), takeExtension)
 
 
 runScottyApp :: IO ()
 runScottyApp = do
+    currentDir <- getCurrentDirectory
+    let serverDependenciesDir = currentDir </> "ServerDependancies"
+    let logsDir = currentDir </> "logs"
     logScotty "Starting Scotty App..."
     scotty 3001 $ do
         get "/scotty" $ text "Hello from Scotty!"
 
         get "/scotty/csharp" $ do
-            let exePath = "ServerDependancies\\CSharpHelloWorld\\HelloWorldLibrary.exe"
+            let exePath = serverDependenciesDir </> "CSharpHelloWorld" </> "HelloWorldLibrary.exe"
             result <- liftIO $ tryReadProcess exePath [] ""
             case result of
                 Left err -> text (pack $ "Scotty: " ++ err)
@@ -43,11 +48,11 @@ runScottyApp = do
 
         get "/scotty/python/:filename" $ do
             filename <- captureParam "filename"
-            let filepath = "ServerDependancies\\PythonScripts\\" ++ filename
+            let filepath = serverDependenciesDir </> "PythonScripts" </> filename
             fileExists <- liftIO $ doesFileExist filepath
             if not fileExists
                 then text "File does not exist"
-                else if not (".py" `List.isSuffixOf` filename)
+                else if takeExtension filename /= ".py"
                     then text "File is not a Python (.py) file"
                     else do
                         result <- liftIO $ tryCallCommand filepath
