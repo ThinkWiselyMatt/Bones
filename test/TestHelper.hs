@@ -11,15 +11,7 @@ import Lib(logMessage)
 
 startServices :: MVar () -> IO ProcessHandle
 startServices logMar = do
-    (_, Just hout, Just herr, ph) <- createProcess (proc "stack" ["exec", "bones-exe"])
-        { std_out = CreatePipe, std_err = CreatePipe }
-
-    let handleOutput handle = forkIO $ do
-            contents <- hGetContents handle
-            mapM_ (logTHelp logMar) (lines contents)
-
-    _  <- handleOutput hout
-    _  <- handleOutput herr
+    (_, _, _, ph) <- createProcess (proc "stack" ["exec", "Bones-exe"])
 
     threadDelay 2000000  -- 2 seconds
 
