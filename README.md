@@ -13,7 +13,7 @@ Build and run with stack
 `stack test` 
 
 
-`stack exec bones-exe`
+`stack exec Bones-exe`
 
 to run once built 
 
@@ -29,9 +29,19 @@ http://localhost:3002/yesod/`
 
 `/cpp/add/x/y` C++ dll add function 
 
-`/python/scriptname.py` to run scripts you place in \ServerDependancies\PythonScripts (still working on calling python in haskell itself... inline-python has disappeared)
+`/python/scriptname.py` to run scripts you place in \ServerDependancies\PythonScripts 
 
 
-I have not tested this on any OS other than windows -- you might need to rebuild DLLs if using another OS
+Should build and run on Windows and Ubuntu 
 
-decent guide for getting started on Windows : https://travishorn.com/haskell-development-on-windows
+to build the required native exports library in Ubuntu 
+`./native`
+
+`g++ -c -fPIC exports.cpp -o exports.o`
+
+`g++ -shared -o libNativeExports.so exports.o`
+
+will need to place a copy of .so in same dir at the Bones-exe executable 
+otherwise the cpp endpoints will fail 
+
+
